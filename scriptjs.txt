@@ -1,0 +1,75 @@
+let startTime;
+let updatedTime;
+let difference;
+let tInterval;
+let running = false;
+let minutes = 0;
+let seconds = 0;
+let milliseconds = 0;
+let savedTime;
+
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const resetBtn = document.getElementById('resetBtn');
+const lapBtn = document.getElementById('lapBtn');
+const minutesDisplay = document.getElementById('minutes');
+const secondsDisplay = document.getElementById('seconds');
+const millisecondsDisplay = document.getElementById('milliseconds');
+const laps = document.getElementById('laps');
+
+startBtn.addEventListener('click', startTimer);
+pauseBtn.addEventListener('click', pauseTimer);
+resetBtn.addEventListener('click', resetTimer);
+lapBtn.addEventListener('click', recordLap);
+
+function startTimer() {
+    if (!running) {
+        startTime = new Date().getTime() - difference;
+        tInterval = setInterval(getShowTime, 10); // Update the time every 10ms
+        running = true;
+    }
+}
+
+function pauseTimer() {
+    if (running) {
+        clearInterval(tInterval);
+        savedTime = difference;
+        running = false;
+    }
+}
+
+function resetTimer() {
+    clearInterval(tInterval);
+    running = false;
+    difference = 0;
+    savedTime = 0;
+    minutes = 0;
+    seconds = 0;
+    milliseconds = 0;
+    minutesDisplay.textContent = "00";
+    secondsDisplay.textContent = "00";
+    millisecondsDisplay.textContent = "00";
+    laps.innerHTML = '';
+}
+
+function recordLap() {
+    if (running) {
+        const lapTime = `${minutesDisplay.textContent}:${secondsDisplay.textContent}:${millisecondsDisplay.textContent}`;
+        const li = document.createElement('li');
+        li.textContent = `Lap ${laps.children.length + 1}: ${lapTime}`;
+        laps.appendChild(li);
+    }
+}
+
+function getShowTime() {
+    updatedTime = new Date().getTime();
+    difference = updatedTime - startTime;
+
+    minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    milliseconds = Math.floor((difference % 1000) / 10);
+
+    minutesDisplay.textContent = (minutes < 10) ? "0" + minutes : minutes;
+    secondsDisplay.textContent = (seconds < 10) ? "0" + seconds : seconds;
+    millisecondsDisplay.textContent = (milliseconds < 10) ? "0" + milliseconds : milliseconds;
+}
